@@ -16,10 +16,11 @@ type cache struct {
 }
 
 func NewCache(search string, data interface{}, duration int64) *cache {
+
 	newCache := &cache{
 		hash: makeHash(search),
 		data: data,
-		time: time.Now().Add(time.Duration(duration) * time.Second),
+		time: time.Now().Add(time.Duration(duration) * time.Minute),
 	}
 	listCache[newCache.hash] = *newCache
 	go verifyCaches()
@@ -34,7 +35,7 @@ func verifyCaches() {
 	for len(listCache) > 0 {
 		for _, r := range listCache {
 			if time.Now().After(r.time) {
-				removeFromSlice(r)
+				remove(r)
 			}
 			time.Sleep(1 * time.Second)
 		}
@@ -47,7 +48,17 @@ func Get(search string) interface{} {
 	return listCache[makeHash(search)]
 }
 
-func removeFromSlice(cache cache) {
+func (c cache) SetData(data interface{}) {
+	c = listCache[makeHash(c.hash)]
+	c.data = data
+}
+
+func (c cache) SetTime(addTime uint64) {
+	c = listCache[makeHash(c.hash)]
+	c.time = time.Now().Add(time.Duration(addTime) * time.Minute)
+}
+
+func remove(cache cache) {
 	delete(listCache, cache.hash)
 }
 
