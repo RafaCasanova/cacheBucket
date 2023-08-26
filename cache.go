@@ -49,12 +49,12 @@ func Get(search string) interface{} {
 }
 
 func (c cache) SetData(data interface{}) {
-	c = listCache[makeHash(c.hash)]
+	c = listCache[c.hash]
 	c.data = data
 }
 
-func (c cache) SetTime(addTime uint64) {
-	c = listCache[makeHash(c.hash)]
+func (c cache) AddTime(addTime uint64) {
+	c = listCache[c.hash]
 	c.time = time.Now().Add(time.Duration(addTime) * time.Minute)
 }
 
